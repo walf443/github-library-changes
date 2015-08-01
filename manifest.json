@@ -1,10 +1,13 @@
 {
     "name": "Github Library Changes",
+    "version": "0.0.1",
+    "manifest_version": 2,
     "content_scripts": [{
-        "matches": ["http://github.com/*"],
+        "matches": ["https://github.com/*"],
         "js": ["build/main.js"]
     }],
     "permissions": [
-        "tabs": "http://github.com/*"
+        "tabs",
+        "https://rubygems.org/"
     ]
 }

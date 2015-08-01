@@ -1,9 +1,11 @@
 {
   "name": "github-changes-package",
   "dependencies": {
-    "gulp-typescript": "~0.1.0",
+    "github-injection": "^0.1.0",
     "gulp": "~3.6.0",
-    "gulp-tsc": "~0.7.0"
+    "gulp-tsc": "~0.7.0",
+    "gulp-typescript": "~0.1.0",
+    "jquery": "^2.1.4"
   },
   "devDependencies": {
     "babelify": "^6.1.3",
@@ -14,7 +16,6 @@
     "gulp-json-editor": "^2.0.2",
     "gulp-tsc": "^0.7.0",
     "gulp-zip": "^0.3.4",
-    "q": "^1.0.1",
     "vinyl-source-stream": "^0.1.1"
   },
   "author": "Keiji Yoshimi <walf443@gmail.com>",
