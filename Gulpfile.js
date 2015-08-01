@@ -4,7 +4,7 @@ const babelify = require('babelify');
 const source = require('vinyl-source-stream');
 
 gulp.task('browserify', function() {
-    browserify('src/main.es6.js', { debug: true })
+    browserify('src/main.es6.js', { debug: true, 'extensions': ['.es6.js'] })
         .transform(babelify)
         .bundle()
         .on('error', function(err) { console.log("Error: " + err.message); })

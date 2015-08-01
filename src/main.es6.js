@@ -1,6 +1,7 @@
 () => {
     const githubInjection = require('github-injection');
     const $ = require('jquery');
+    const rubygems = require('./rubygems');
 
     const main = () => {
         checkValidLocation()
@@ -30,8 +31,9 @@
         let changedLines = extractTargetLines(file);
         let changedLibraries = $(changedLines).map((i, line) => {
             let result = {
-                deleted_code: extractGemName(line.deleted_code.text()),
-                added_code: extractGemName(line.added_code.text()),
+                line: line,
+                deleted_code: rubygems.parseLibrary(line.deleted_code.text()),
+                added_code: rubygems.parseLibrary(line.added_code.text()),
             };
             if ( result.deleted_code && result.added_code && result.deleted_code.name === result.added_code.name ) {
                 result.name = result.deleted_code.name;
@@ -45,7 +47,7 @@
             if ( library === null ) {
                 return;
             }
-            promises.push(gemApi(library.name));
+            promises.push(rubygems.requestApi(library.name));
         });
         Promise.all(promises).then((result) => {
             let libraryOf = {};
@@ -58,45 +60,26 @@
                     return;
                 }
                 if ( libraryOf[lib.name] ) {
-                    let githubUrl = getGithubForGem(libraryOf[lib.name]);
+                    let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
                     if ( githubUrl ) {
                         let diffUrl = githubUrl + '/compare/' + 'v' + lib.deleted_code.version + '...' + 'v' + lib.added_code.version + '#files_bucket';
-                        console.log(diffUrl);
+                        modifyPageClickableToDiffUrl(lib.line.added_code, diffUrl);
+                        modifyPageClickableToDiffUrl(lib.line.deleted_code, diffUrl);
                     }
                 }
             });
         });
     };
 
-    const extractGemName = (line) => {
-         let regexp = /\s*(\S+)\s*\([-~>= ]*([\d\.]+)\)/
-         let result = line.match(regexp);
-         if ( ! result ) {
-             return;
-         }
-         return {
-             name: result[1],
-             version: result[2]
-         };
-    };
-
-    const gemApi = (gemName) => {
-        return new Promise((resolve, reject) => {
-            return $.ajax('https://rubygems.org/api/v1/gems/' + gemName + '.json').then(resolve, reject);
+    const modifyPageClickableToDiffUrl = function(element, diffUrl) {
+        element.data('diff-url', diffUrl);
+        element.css('cursor', 'pointer');
+        element.click((e) => {
+            let target = $(e.currentTarget);
+            if ( target.data('diff-url') ) {
+                window.open(target.data('diff-url'));
+            }
         });
-    };
-
-    const isGithubURL = (url) => {
-        return new RegExp("https?://github.com/").test(url);
-    };
-
-    const getGithubForGem = (library) => {
-        if (library.source_code_uri && isGithubURL(library.source_code_uri)) {
-            return library.source_code_uri;
-        }
-        if (library.homepage_uri && isGithubURL(library.homepage_uri)) {
-            return library.homepage_uri;
-        }
     };
 
     const extractFiles = () => {
