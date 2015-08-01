@@ -1,0 +1,10 @@
+{
+    "name": "Github Library Changes",
+    "content_scripts": [{
+        "matches": ["http://github.com/*"],
+        "js": ["build/main.js"]
+    }],
+    "permissions": [
+        "tabs": "http://github.com/*"
+    ]
+}
