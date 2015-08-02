@@ -54,17 +54,17 @@
                 promises.push(rubygems.requestApi(library.name));
             });
             Promise.all(promises).then((result) => {
-                let libraryOf = {};
-                $(result).each((i, lib) => {
-                    libraryOf[lib.name] = lib;
+                let responseOf = {};
+                $(result).each((i, res) => {
+                    responseOf[res.name] = res;
                 });
 
                 changedLibraries.each((i, lib) => {
                     if ( lib === null ) {
                         return;
                     }
-                    if ( libraryOf[lib.name] ) {
-                        let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
+                    if ( responseOf[lib.name] ) {
+                        let githubUrl = rubygems.getGithubUrl(responseOf[lib.name]);
                         if ( githubUrl ) {
                             let diffUrl = github.getDiffURL(githubUrl, lib.deletionDOM.version, lib.additionDOM.version);
                             rewriteDOM(lib.line.additionDOM, diffUrl);
