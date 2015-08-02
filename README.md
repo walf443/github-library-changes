@@ -7,7 +7,7 @@ install from chrome webstore: https://chrome.google.com/webstore/detail/github-l
 
 ## Screenshot
 
-[Screenshot](screenshot.png)
+![Screenshot](screenshot.png)
 
 ## Features
 
