@@ -2,6 +2,7 @@
     const githubInjection = require('github-injection');
     const $ = require('jquery');
     const rubygems = require('./rubygems');
+    const github = require('./github');
 
     const main = () => {
         checkValidLocation()
@@ -62,16 +63,16 @@
                 if ( libraryOf[lib.name] ) {
                     let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
                     if ( githubUrl ) {
-                        let diffUrl = githubUrl + '/compare/' + 'v' + lib.deleted_code.version + '...' + 'v' + lib.added_code.version + '#files_bucket';
-                        modifyPageClickableToDiffUrl(lib.line.added_code, diffUrl);
-                        modifyPageClickableToDiffUrl(lib.line.deleted_code, diffUrl);
+                        let diffUrl = github.getDiffURL(githubUrl, lib.deleted_code.version, lib.added_code.version);
+                        rewriteDOM(lib.line.added_code, diffUrl);
+                        rewriteDOM(lib.line.deleted_code, diffUrl);
                     }
                 }
             });
         });
     };
 
-    const modifyPageClickableToDiffUrl = function(element, diffUrl) {
+    const rewriteDOM = function(element, diffUrl) {
         element.data('diff-url', diffUrl);
         element.css('cursor', 'pointer');
         element.click((e) => {
