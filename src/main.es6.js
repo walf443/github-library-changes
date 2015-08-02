@@ -16,7 +16,7 @@
                 reject();
                 return;
             }
-            extractFiles().each((i, file) => {
+            github.extractFilenames().each((i, file) => {
                 switch ( file ) {
                     case "Gemfile.lock":
                         handleGemfile();
@@ -28,8 +28,8 @@
     };
 
     const handleGemfile = () => {
-        let file = getFile('Gemfile.lock');
-        let changedLines = extractTargetLines(file);
+        let file = github.getFileDOM('Gemfile.lock');
+        let changedLines = github.extractChangeLines(file);
         let changedLibraries = $(changedLines).map((i, line) => {
             let result = {
                 line: line,
@@ -81,33 +81,6 @@
                 window.open(target.data('diff-url'));
             }
         });
-    };
-
-    const extractFiles = () => {
-        return $('.file-header[data-path]').map((i, e) => $(e).data('path'));
-    };
-
-    const extractTargetLines = (file) => {
-        let result = []
-        $('.diff-table tr', file).each((i, line) => {
-            let deleted_code = $('.blob-code.blob-code-deletion', line);
-            let added_code = $('.blob-code.blob-code-addition', line);
-            if ( deleted_code[0] && added_code[0] ) {
-                result.push({ added_code: added_code, deleted_code: deleted_code });
-            }
-        });
-        return result;
-    };
-
-    const getFile = (filename) => {
-        let result;
-        $('#files .file').each((i, file) => {
-            let target = $('.file-header[data-path=" + file + "]', file);
-            if ( target ) {
-                result = file;
-            }
-        });
-        return result;
     };
 
     const extractLibraries = () => {
