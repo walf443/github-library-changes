@@ -2,6 +2,7 @@
   "name": "github-changes-package",
   "dependencies": {
     "github-injection": "^0.1.0",
+    "github-linker-cache": "^0.2.34",
     "gulp": "~3.6.0",
     "gulp-tsc": "~0.7.0",
     "gulp-typescript": "~0.1.0",
