@@ -4,7 +4,27 @@ module.exports = {
         return new RegExp("https?://github.com/").test(url);
     },
     getDiffURL(baseURL, beforeVersion, afterVersion) {
-      return baseURL + '/compare/' + 'v' + beforeVersion + '...' + 'v' + afterVersion + '#files_bucket';
+      return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'HEAD',
+            async: true,
+            url: baseURL + '/releases/tag/' + beforeVersion
+        }).done((res) => {
+            let url = baseURL + '/compare/' + beforeVersion + '...' + afterVersion + '#files_bucket';
+            resolve(url);
+        }).fail((err) => {
+            $.ajax({
+                type: 'HEAD',
+                async: true,
+                url: baseURL + '/releases/tag/' + 'v' + beforeVersion
+            }).done((res) => {
+                let url = baseURL + '/compare/' + 'v' + beforeVersion + '...' + 'v' + afterVersion + '#files_bucket';
+                resolve(url);
+            }).fail((err) => {
+                reject(err);
+            });
+        });
+      });
     },
     getFileDOM(filename) {
         let result;

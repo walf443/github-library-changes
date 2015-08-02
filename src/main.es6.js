@@ -63,6 +63,7 @@
                     responseOf[res.name] = res;
                 });
 
+                let promises = [];
                 changedLibraries.each((i, lib) => {
                     if ( lib === null ) {
                         return;
@@ -70,11 +71,15 @@
                     if ( responseOf[lib.name] ) {
                         let githubUrl = rubygems.getGithubUrl(responseOf[lib.name]);
                         if ( githubUrl ) {
-                            let diffUrl = github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version);
-                            rewriteDOM(lib.line.additionDOM, diffUrl);
-                            rewriteDOM(lib.line.deletionDOM, diffUrl);
+                            promises.push(github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version).then((diffUrl) => {
+                              rewriteDOM(lib.line.additionDOM, diffUrl);
+                              rewriteDOM(lib.line.deletionDOM, diffUrl);
+                            }).catch((err) => { console.log(err); resolve(); }));
                         }
                     }
+                });
+                Promise.all(promises).then(() => {
+                    resolve();
                 });
                 resolve();
             }).catch(reject);
@@ -98,18 +103,23 @@
                     return null;
                 }
             });
+            let promises = [];
             $(changedLibraries).each((i, library) => {
                 if ( library === null ) {
                     return;
                 }
                 let githubUrl = npm.getGithubUrl(library.name);
                 if ( githubUrl ) {
+                    promises.push(github.getDiffURL(githubUrl, library.deletion.version, library.addition.version).then((diffUrl) => {
+                        rewriteDOM(library.line.additionDOM, diffUrl);
+                        rewriteDOM(library.line.deletionDOM, diffUrl);
+                    }).catch((err) => { console.log(err); resolve(); }));
                     let diffUrl = github.getDiffURL(githubUrl, library.deletion.version, library.addition.version);
-                    rewriteDOM(library.line.additionDOM, diffUrl);
-                    rewriteDOM(library.line.deletionDOM, diffUrl);
                 }
             });
-            resolve();
+            Promise.all(promises).then(() => {
+                resolve();
+            });
         });
     };
 
