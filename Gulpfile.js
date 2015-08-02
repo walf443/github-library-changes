@@ -12,8 +12,13 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./build/'));
 });
 
-gulp.task('watch', function() {
-    gulp.watch('src/*.es6.js', ['browserify']);
+gulp.task('manifest', function() {
+    gulp.src('manifest.json').pipe(gulp.dest('build'));
 });
 
-gulp.task('default', ['browserify', 'watch']);
+gulp.task('watch', function() {
+    gulp.watch('src/*.es6.js', ['browserify']);
+    gulp.watch('manifest.json', ['manifest']);
+});
+
+gulp.task('default', ['browserify', 'manifest', 'watch']);
