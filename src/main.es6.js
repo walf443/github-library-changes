@@ -1,8 +1,9 @@
 () => {
     const githubInjection = require('github-injection');
     const $ = require('jquery');
-    const rubygems = require('./rubygems');
     const github = require('./github');
+    const rubygems = require('./rubygems');
+    const npm = require('./npm');
 
     const main = () => {
         checkValidLocation()
@@ -12,7 +13,7 @@
 
     const checkValidLocation = () => {
         return new Promise((resolve, reject) => {
-            if ( ! new RegExp("/commit/").test(location.href) ) {
+            if ( ! new RegExp("/(commit|compare)/").test(location.href) ) {
                 reject();
                 return;
             }
@@ -21,6 +22,9 @@
                 switch ( file ) {
                     case "Gemfile.lock":
                         promises.push(handleGemfile());
+                        break;
+                    case "package.json":
+                        promises.push(handlePackageJson());
                         break;
                 }
             });
@@ -74,6 +78,37 @@
                 });
                 resolve();
             }).catch(reject);
+        });
+    };
+
+    const handlePackageJson = function() {
+        return new Promise((resolve, reject) => {
+            let file = github.getFileDOM('package.json');
+            let changedLines = github.extractChangeLines(file);
+            let changedLibraries = $(changedLines).map((i, line) => {
+                let result = {
+                    line: line,
+                    deletion: npm.parseLibrary(line.deletionDOM.text()),
+                    addition: npm.parseLibrary(line.additionDOM.text()),
+                };
+                if ( result.deletion && result.addition && result.deletion.name === result.addition.name ) {
+                    result.name = result.deletion.name;
+                    return result;
+                } else {
+                    return null;
+                }
+            });
+            $(changedLibraries).each((i, library) => {
+                if ( library === null ) {
+                    return;
+                }
+                let githubUrl = npm.getGithubUrl(library.name);
+                if ( githubUrl ) {
+                    let diffUrl = github.getDiffURL(githubUrl, library.deletion.version, library.addition.version);
+                    rewriteDOM(library.line.additionDOM, diffUrl);
+                    rewriteDOM(library.line.deletionDOM, diffUrl);
+                }
+            });
         });
     };
 
