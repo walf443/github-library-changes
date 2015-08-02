@@ -109,6 +109,7 @@
                     rewriteDOM(library.line.deletionDOM, diffUrl);
                 }
             });
+            resolve();
         });
     };
 
