@@ -14,6 +14,9 @@ module.exports = {
          };
     },
     getGithubUrl(packageName) {
-        return githubLinkerCache.npm[packageName];
+        let result = githubLinkerCache.npm[packageName];
+        if ( result ) {
+            return result.replace('http://', 'https://');
+        }
     }
 };

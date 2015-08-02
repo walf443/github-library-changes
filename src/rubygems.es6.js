@@ -20,10 +20,10 @@ module.exports = {
     },
     getGithubUrl(res) {
         if (res.source_code_uri && github.isUrl(res.source_code_uri)) {
-            return res.source_code_uri;
+            return res.source_code_uri.replace('http://', 'https://');
         }
         if (res.homepage_uri && github.isUrl(res.homepage_uri)) {
-            return res.homepage_uri;
+            return res.homepage_uri.replace('http://', 'https://');
         }
     }
 
