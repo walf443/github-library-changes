@@ -8,17 +8,17 @@ module.exports = {
         $.ajax({
             type: 'HEAD',
             async: true,
-            url: baseURL + '/releases/tag/' + beforeVersion
+            url: baseURL + '/releases/tag/' + 'v' + beforeVersion
         }).done((res) => {
-            let url = baseURL + '/compare/' + beforeVersion + '...' + afterVersion + '#files_bucket';
+            let url = baseURL + '/compare/' + 'v' + beforeVersion + '...' + 'v' + afterVersion + '#files_bucket';
             resolve(url);
         }).fail((err) => {
             $.ajax({
                 type: 'HEAD',
                 async: true,
-                url: baseURL + '/releases/tag/' + 'v' + beforeVersion
+                url: baseURL + '/releases/tag/' + beforeVersion
             }).done((res) => {
-                let url = baseURL + '/compare/' + 'v' + beforeVersion + '...' + 'v' + afterVersion + '#files_bucket';
+                let url = baseURL + '/compare/' + beforeVersion + '...' + afterVersion + '#files_bucket';
                 resolve(url);
             }).fail((err) => {
                 reject(err);
