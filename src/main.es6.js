@@ -33,11 +33,11 @@
         let changedLibraries = $(changedLines).map((i, line) => {
             let result = {
                 line: line,
-                deleted_code: rubygems.parseLibrary(line.deleted_code.text()),
-                added_code: rubygems.parseLibrary(line.added_code.text()),
+                deletionDOM: rubygems.parseLibrary(line.deletionDOM.text()),
+                additionDOM: rubygems.parseLibrary(line.additionDOM.text()),
             };
-            if ( result.deleted_code && result.added_code && result.deleted_code.name === result.added_code.name ) {
-                result.name = result.deleted_code.name;
+            if ( result.deletionDOM && result.additionDOM && result.deletionDOM.name === result.additionDOM.name ) {
+                result.name = result.deletionDOM.name;
                 return result;
             } else {
                 return null;
@@ -63,9 +63,9 @@
                 if ( libraryOf[lib.name] ) {
                     let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
                     if ( githubUrl ) {
-                        let diffUrl = github.getDiffURL(githubUrl, lib.deleted_code.version, lib.added_code.version);
-                        rewriteDOM(lib.line.added_code, diffUrl);
-                        rewriteDOM(lib.line.deleted_code, diffUrl);
+                        let diffUrl = github.getDiffURL(githubUrl, lib.deletionDOM.version, lib.additionDOM.version);
+                        rewriteDOM(lib.line.additionDOM, diffUrl);
+                        rewriteDOM(lib.line.deletionDOM, diffUrl);
                     }
                 }
             });

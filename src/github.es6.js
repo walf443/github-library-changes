@@ -22,10 +22,10 @@ module.exports = {
     extractChangeLines(fileDOM) {
         let result = []
         $('.diff-table tr', fileDOM).each((i, line) => {
-            let deleted_code = $('.blob-code.blob-code-deletion', line);
-            let added_code = $('.blob-code.blob-code-addition', line);
-            if ( deleted_code[0] && added_code[0] ) {
-                result.push({ added_code: added_code, deleted_code: deleted_code });
+            let deletionDOM = $('.blob-code.blob-code-deletion', line);
+            let additionDOM = $('.blob-code.blob-code-addition', line);
+            if ( deletionDOM[0] && additionDOM[0] ) {
+                result.push({ additionDOM: additionDOM, deletionDOM: deletionDOM });
             }
         });
         return result;
