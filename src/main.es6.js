@@ -6,7 +6,7 @@
 
     const main = () => {
         checkValidLocation()
-            .then(() => extractLibraries())
+            .then(() => {})
             .catch((err) => { if (err) { console.log(err) } });
     };
 
@@ -16,59 +16,64 @@
                 reject();
                 return;
             }
+            let promises = [];
             github.extractFilenames().each((i, file) => {
                 switch ( file ) {
                     case "Gemfile.lock":
-                        handleGemfile();
+                        promises.push(handleGemfile());
                         break;
                 }
             });
-            resolve();
+
+            Promise.all(promises).then(resolve, reject);
         });
     };
 
     const handleGemfile = () => {
-        let file = github.getFileDOM('Gemfile.lock');
-        let changedLines = github.extractChangeLines(file);
-        let changedLibraries = $(changedLines).map((i, line) => {
-            let result = {
-                line: line,
-                deletionDOM: rubygems.parseLibrary(line.deletionDOM.text()),
-                additionDOM: rubygems.parseLibrary(line.additionDOM.text()),
-            };
-            if ( result.deletionDOM && result.additionDOM && result.deletionDOM.name === result.additionDOM.name ) {
-                result.name = result.deletionDOM.name;
-                return result;
-            } else {
-                return null;
-            }
-        });
-        let promises = [];
-        changedLibraries.each((i, library) => {
-            if ( library === null ) {
-                return;
-            }
-            promises.push(rubygems.requestApi(library.name));
-        });
-        Promise.all(promises).then((result) => {
-            let libraryOf = {};
-            $(result).each((i, lib) => {
-                libraryOf[lib.name] = lib;
+        return new Promise((resolve, reject) => {
+            let file = github.getFileDOM('Gemfile.lock');
+            let changedLines = github.extractChangeLines(file);
+            let changedLibraries = $(changedLines).map((i, line) => {
+                let result = {
+                    line: line,
+                    deletionDOM: rubygems.parseLibrary(line.deletionDOM.text()),
+                    additionDOM: rubygems.parseLibrary(line.additionDOM.text()),
+                };
+                if ( result.deletionDOM && result.additionDOM && result.deletionDOM.name === result.additionDOM.name ) {
+                    result.name = result.deletionDOM.name;
+                    return result;
+                } else {
+                    return null;
+                }
             });
-
-            changedLibraries.each((i, lib) => {
-                if ( lib === null ) {
+            let promises = [];
+            changedLibraries.each((i, library) => {
+                if ( library === null ) {
                     return;
                 }
-                if ( libraryOf[lib.name] ) {
-                    let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
-                    if ( githubUrl ) {
-                        let diffUrl = github.getDiffURL(githubUrl, lib.deletionDOM.version, lib.additionDOM.version);
-                        rewriteDOM(lib.line.additionDOM, diffUrl);
-                        rewriteDOM(lib.line.deletionDOM, diffUrl);
-                    }
-                }
+                promises.push(rubygems.requestApi(library.name));
             });
+            Promise.all(promises).then((result) => {
+                let libraryOf = {};
+                $(result).each((i, lib) => {
+                    libraryOf[lib.name] = lib;
+                });
+
+                changedLibraries.each((i, lib) => {
+                    if ( lib === null ) {
+                        return;
+                    }
+                    if ( libraryOf[lib.name] ) {
+                        let githubUrl = rubygems.getGithubUrl(libraryOf[lib.name]);
+                        if ( githubUrl ) {
+                            let diffUrl = github.getDiffURL(githubUrl, lib.deletionDOM.version, lib.additionDOM.version);
+                            rewriteDOM(lib.line.additionDOM, diffUrl);
+                            rewriteDOM(lib.line.deletionDOM, diffUrl);
+                        }
+                    }
+                });
+                resolve();
+            }).catch(reject);
         });
     };
 
@@ -80,12 +85,6 @@
             if ( target.data('diff-url') ) {
                 window.open(target.data('diff-url'));
             }
-        });
-    };
-
-    const extractLibraries = () => {
-        return new Promise((resolve, reject) => {
-            resolve();
         });
     };
 
