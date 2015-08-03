@@ -74,7 +74,7 @@
                     if ( responseOf[lib.name] ) {
                         let githubUrl = rubygems.getGithubUrl(responseOf[lib.name]);
                         if ( githubUrl ) {
-                            promises.push(github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version, {}).then((diffUrl) => {
+                            promises.push(github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version).then((diffUrl) => {
                               rewriteDOM(lib.line.additionDOM, diffUrl);
                               rewriteDOM(lib.line.deletionDOM, diffUrl);
                             }).catch((err) => { console.log(err); resolve(); }));
@@ -130,8 +130,7 @@
                     if ( responseOf[lib.name] ) {
                         let githubUrl = cocoapods.getGithubUrl(responseOf[lib.name]);
                         if ( githubUrl ) {
-                            let versionStyle = cocoapods.getVersionStyle(responseOf[lib.name]);
-                            promises.push(github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version, {versionStyle}).then((diffUrl) => {
+                            promises.push(github.getDiffURL(githubUrl, lib.deletion.version, lib.addition.version).then((diffUrl) => {
                               rewriteDOM(lib.line.additionDOM, diffUrl);
                               rewriteDOM(lib.line.deletionDOM, diffUrl);
                             }).catch((err) => { console.log(err); resolve(); }));
@@ -170,7 +169,7 @@
                 }
                 let githubUrl = npm.getGithubUrl(library.name);
                 if ( githubUrl ) {
-                    promises.push(github.getDiffURL(githubUrl, library.deletion.version, library.addition.version, {}).then((diffUrl) => {
+                    promises.push(github.getDiffURL(githubUrl, library.deletion.version, library.addition.version).then((diffUrl) => {
                         rewriteDOM(library.line.additionDOM, diffUrl);
                         rewriteDOM(library.line.deletionDOM, diffUrl);
                     }).catch((err) => { console.log(err); resolve(); }));

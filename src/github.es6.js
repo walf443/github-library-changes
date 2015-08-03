@@ -3,18 +3,8 @@ module.exports = {
     isUrl(url) {
         return new RegExp("https?://github.com/").test(url);
     },
-    getDiffURL(baseURL, beforeVersion, afterVersion, options) {
+    getDiffURL(baseURL, beforeVersion, afterVersion) {
       return new Promise((resolve, reject) => {
-        if ( options.versionStyle ) {
-            switch ( options.versionStyle ) {
-                case 'plain':
-                  resolve(baseURL + '/compare/' + beforeVersion + '...' + afterVersion + '#files_bucket');
-                  return;
-                case 'v':
-                  resolve(baseURL + '/compare/' + beforeVersion + '...' + afterVersion + '#files_bucket');
-                  return;
-            }
-        }
         $.ajax({
             type: 'HEAD',
             async: true,
