@@ -29,6 +29,9 @@ module.exports = {
     },
     getGithubUrl(res) {
         return res.source.git.replace('.git', '');
+    },
+    getVersionStyle(res) {
+        return ( res.version && res.version[0] === 'v' ) ? 'v' : 'plain';
     }
 
 };
