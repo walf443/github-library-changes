@@ -10,6 +10,12 @@ gulp.task('browserify', function() {
         .on('error', function(err) { console.log("Error: " + err.message); })
         .pipe(source('main.js'))
         .pipe(gulp.dest('./build/'));
+    browserify('src/background.es6.js', { debug: true, 'extensions': ['.es6.js'] })
+        .transform(babelify)
+        .bundle()
+        .on('error', function(err) { console.log("Error: " + err.message); })
+        .pipe(source('background.js'))
+        .pipe(gulp.dest('./build/'));
 });
 
 gulp.task('manifest', function() {
