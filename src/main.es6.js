@@ -13,7 +13,7 @@
 
     const checkValidLocation = () => {
         return new Promise((resolve, reject) => {
-            if ( ! new RegExp("/(commit|compare)/").test(location.href) ) {
+            if ( ! new RegExp("/(commit|compare|pull)/").test(location.href) ) {
                 reject();
                 return;
             }
@@ -136,7 +136,6 @@
 
     githubInjection(window, (err) => {
         if ( err ) { throw err };
-
         main();
     });
 }();
