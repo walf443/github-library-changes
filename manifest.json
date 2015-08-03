@@ -6,8 +6,14 @@
         "matches": ["https://github.com/*"],
         "js": ["main.js"]
     }],
+    "background": {
+        "scripts": ["background.js"]
+    },
     "permissions": [
         "tabs",
-        "https://rubygems.org/"
+        "webRequest",
+        "webRequestBlocking",
+        "https://rubygems.org/",
+        "https://search.cocoapods.org/"
     ]
 }
